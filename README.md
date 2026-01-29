@@ -2,7 +2,9 @@
 
 A modern, animated 3D developer portfolio built with React, Three.js, TailwindCSS, and motion effects — designed to help you stand out and showcase your skills creatively.
 
-![3d Portfolio Screenshot GitHub](https://github.com/user-attachments/assets/9b0ed20e-074e-4f2a-81d8-20c9da751e9e)
+![3d Portfolio Screenshot GitHub]
+<img width="1899" height="1003" alt="image" src="https://github.com/user-attachments/assets/c9ba0a46-ecac-4fa9-974c-4c656eb79bf7" />
+
 
 ---
 
@@ -69,7 +71,7 @@ A modern, animated 3D developer portfolio built with React, Three.js, TailwindCS
 ## 🚀 Getting Started
 1. Clone the Repository
 ```bash
-git clone https://github.com/Ali-Sanati/Portfolio.git
+git clone https://github.com/amit-sarkar-svg/Amit-Portfilio.git
 cd Portfolio
 ```
 2. Install Dependencies
