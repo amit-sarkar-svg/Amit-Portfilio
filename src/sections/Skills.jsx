@@ -1,11 +1,15 @@
 import { skillGroups } from "../constants";
 import Reveal from "../components/Reveal";
+import useStaggerIn from "../hooks/useStaggerIn";
+import SplitHeading from "../components/SplitHeading";
 
-const Skills = () => (
-  <section id="skills" className="wrap section-pad">
+const Skills = () => {
+  const list = useStaggerIn("li[data-chip]", { from: 12, step: 35 });
+  return (
+  <section id="skills" ref={list} className="wrap section-pad">
     <Reveal>
       <p className="caption-1 text-neutral-400">Skills</p>
-      <h2 className="mt-2 heading-2 max-w-[680px]">The tools I reach for first</h2>
+      <SplitHeading className="mt-2 heading-2 max-w-[680px]">The tools I reach for first</SplitHeading>
     </Reveal>
 
     <div className="grid gap-4 mt-12 md:grid-cols-2 lg:grid-cols-3">
@@ -17,6 +21,7 @@ const Skills = () => (
               {g.items.map((s) => (
                 <li
                   key={s}
+                  data-chip
                   className="px-3 py-1 border rounded-lg caption-4 bg-s3 border-white/10"
                 >
                   {s}
@@ -28,6 +33,7 @@ const Skills = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 export default Skills;

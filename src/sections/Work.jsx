@@ -1,12 +1,16 @@
 import { ArrowUpRight, CheckCircle } from "@phosphor-icons/react";
 import { projects } from "../constants";
 import Reveal from "../components/Reveal";
+import useStaggerIn from "../hooks/useStaggerIn";
+import SplitHeading from "../components/SplitHeading";
 
-const Work = () => (
-  <section id="work" className="wrap section-pad">
+const Work = () => {
+  const list = useStaggerIn("li[data-point]", { from: 16, step: 60 });
+  return (
+  <section id="work" ref={list} className="wrap section-pad">
     <Reveal>
       <p className="caption-1 text-neutral-400">Selected work</p>
-      <h2 className="mt-2 heading-2 max-w-[680px]">Three projects, measured by what changed</h2>
+      <SplitHeading className="mt-2 heading-2 max-w-[680px]">Three projects, measured by what changed</SplitHeading>
     </Reveal>
 
     <div className="grid gap-6 mt-12">
@@ -42,7 +46,7 @@ const Work = () => (
 
             <ul className="grid gap-4 md:col-span-7 content-start">
               {p.points.map((pt) => (
-                <li key={pt} className="flex gap-3">
+                <li key={pt} data-point className="flex gap-3">
                   <CheckCircle
                     size={20}
                     weight="fill"
@@ -58,6 +62,7 @@ const Work = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 export default Work;

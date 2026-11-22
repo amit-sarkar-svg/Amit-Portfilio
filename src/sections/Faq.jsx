@@ -1,13 +1,14 @@
 import { Plus } from "@phosphor-icons/react";
 import { faqs } from "../constants";
 import Reveal from "../components/Reveal";
+import SplitHeading from "../components/SplitHeading";
 
 const Faq = () => (
   <section id="faq" className="wrap section-pad">
     <div className="grid gap-12 md:grid-cols-12">
       <Reveal className="md:col-span-5">
         <p className="caption-1 text-neutral-400">FAQ</p>
-        <h2 className="mt-2 heading-3">Questions people ask before we talk</h2>
+        <SplitHeading className="mt-2 heading-3">Questions people ask before we talk</SplitHeading>
       </Reveal>
 
       <div className="grid gap-2 md:col-span-7 content-start">

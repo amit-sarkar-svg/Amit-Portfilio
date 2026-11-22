@@ -103,7 +103,7 @@ const Navbar = () => {
         id="mobile-menu"
         aria-hidden={!open}
         inert={!open}
-        className={`fixed inset-0 z-40 md:hidden bg-base/95 backdrop-blur-2xl transition-opacity duration-500 ease-base ${
+        className={`fixed inset-0 z-40 md:hidden bg-canvas/95 backdrop-blur-2xl transition-opacity duration-500 ease-base ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >

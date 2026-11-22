@@ -1,6 +1,8 @@
 import { ArrowUpRight, GithubLogo, InstagramLogo, LinkedinLogo, EnvelopeSimple } from "@phosphor-icons/react";
 import { profile } from "../constants";
 import Reveal from "../components/Reveal";
+import Magnetic from "../components/Magnetic";
+import SplitHeading from "../components/SplitHeading";
 
 const links = [
   { label: "GitHub", href: profile.github, Icon: GithubLogo },
@@ -11,7 +13,7 @@ const links = [
 const Contact = () => (
   <section id="contact" className="wrap section-pad">
     <Reveal>
-      <div className="flex flex-col items-center p-8 text-center border md:p-16 rounded-2xl bg-s1 border-white/10">
+      <div className="flex flex-col items-center p-8 text-center border md:p-16 rounded-2xl bg-s1/70 backdrop-blur-md border-white/10">
         <h2 className="heading-2 max-w-[680px] hero-gradient-text">
           Have a system that needs to be faster or safer?
         </h2>
@@ -21,10 +23,12 @@ const Contact = () => (
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 mt-8">
-          <a href={profile.linkedin} target="_blank" rel="noreferrer" className="btn-primary">
-            Message me on LinkedIn
-            <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
-          </a>
+          <Magnetic>
+            <a href={profile.linkedin} target="_blank" rel="noreferrer" className="btn-primary">
+              Message me on LinkedIn
+              <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
+            </a>
+          </Magnetic>
           {profile.email && (
             <a href={`mailto:${profile.email}`} className="btn-ghost">
               <EnvelopeSimple size={16} weight="bold" aria-hidden="true" />

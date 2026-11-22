@@ -1,7 +1,11 @@
+import { lazy, Suspense } from "react";
+import Background from "./components/Background";
+import ScrollProgress from "./components/ScrollProgress";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
 import Tagline from "./sections/Tagline";
 import Work from "./sections/Work";
+const Impact = lazy(() => import("./sections/Impact"));
 import Process from "./sections/Process";
 import Skills from "./sections/Skills";
 import Faq from "./sections/Faq";
@@ -20,11 +24,16 @@ const App = () => {
       >
         Skip to content
       </a>
+      <Background />
+      <ScrollProgress />
       <Navbar />
       <main id="main">
         <Hero />
         <Tagline />
         <Work />
+        <Suspense fallback={<div id="impact" className="min-h-[480px]" />}>
+          <Impact />
+        </Suspense>
         <Process />
         <Skills />
         <Faq />

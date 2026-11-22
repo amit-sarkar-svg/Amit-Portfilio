@@ -13,16 +13,17 @@ export const profile = {
 
 export const navLinks = [
   { label: "Work", href: "#work" },
+  { label: "Impact", href: "#impact" },
   { label: "Process", href: "#process" },
   { label: "Skills", href: "#skills" },
   { label: "FAQ", href: "#faq" },
 ];
 
 export const stats = [
-  { value: "1M+", label: "Packets processed", source: "Deep Packet Inspection Engine" },
-  { value: "40%", label: "Higher throughput", source: "Deep Packet Inspection Engine" },
-  { value: "60%", label: "Less regression time", source: "API Test Automation Framework" },
-  { value: "5K+", label: "Users supported", source: "Authentication System" },
+  { to: 1, suffix: "M+", label: "Packets processed", source: "Deep Packet Inspection Engine" },
+  { to: 40, suffix: "%", label: "Higher throughput", source: "Deep Packet Inspection Engine" },
+  { to: 60, suffix: "%", label: "Less regression time", source: "API Test Automation Framework" },
+  { to: 5, suffix: "K+", label: "Users supported", source: "Authentication System" },
 ];
 
 export const tagline =
@@ -135,4 +136,13 @@ export const faqs = [
     q: "What is the best way to reach you?",
     a: "Send a message on LinkedIn. It is the fastest way to start a conversation about a project or a role.",
   },
+];
+
+// Percent changes reported in each project's own results.
+export const impact = [
+  { name: "Throughput", value: 40 },
+  { name: "Defect detection", value: 35 },
+  { name: "DPI latency", value: 30 },
+  { name: "API latency", value: 25 },
+  { name: "Regression time", value: 60 },
 ];
