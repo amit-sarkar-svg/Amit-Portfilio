@@ -1,12 +1,8 @@
-import TaglineReveal from "../components/TaglineReveal";
-import { tagline } from "../constants";
 import OutlineMarquee from "../components/OutlineMarquee";
 
+// The tagline itself now lives in the pinned hero stage; this keeps the outlined strip.
 const Tagline = () => (
   <section aria-label="Approach" className="mt-20 md:mt-24">
-    <div className="wrap py-20 md:py-24">
-      <TaglineReveal text={tagline} />
-    </div>
     <OutlineMarquee />
   </section>
 );
