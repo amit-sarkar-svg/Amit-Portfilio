@@ -1,59 +1,37 @@
-import { useEffect } from "react";
-import Lenis from "lenis";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
-import About from "./sections/About";
-// import Projects from "./sections/Projects";
-import Experiences from "./sections/Experiences";
-// import Testimonial from "./sections/Testimonial";
+import Tagline from "./sections/Tagline";
+import Work from "./sections/Work";
+import Process from "./sections/Process";
+import Skills from "./sections/Skills";
+import Faq from "./sections/Faq";
 import Contact from "./sections/Contact";
-import Footer from './sections/Footer';
-import ImagePreloader from './components/ImagePreloader';
-import { ThemeProvider } from './contexts/ThemeContext';
+import Footer from "./sections/Footer";
+import NotFound from "./sections/NotFound";
 
 const App = () => {
-  useEffect(() => {
-    // Smooth, inertial scrolling (wheel + touch). Respects reduced-motion.
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-
-    if (prefersReducedMotion) return;
-
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: true,
-      smoothTouch: true,
-    });
-
-    let rafId = 0;
-    const raf = (time) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
+  if (window.location.pathname !== "/") return <NotFound />;
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen w-full">
-        <ImagePreloader />
-        <Navbar />
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] px-3 py-2 rounded-lg bg-white text-black button-sm"
+      >
+        Skip to content
+      </a>
+      <Navbar />
+      <main id="main">
         <Hero />
-        <About />
-        {/* <Projects /> */}
-        <Experiences />
-        {/* <Testimonial /> */}
+        <Tagline />
+        <Work />
+        <Process />
+        <Skills />
+        <Faq />
         <Contact />
-        <Footer/>
-      </div>
-    </ThemeProvider>
+      </main>
+      <Footer />
+    </>
   );
 };
 

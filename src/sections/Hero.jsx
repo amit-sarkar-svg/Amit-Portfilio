@@ -1,84 +1,67 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import HeroText from "../components/HeroText";
-import { Particles } from "../components/Particles";
-import ParallaxBackground from "../components/parallaxBackground";
-import { Float } from "@react-three/drei";
-import { useMediaQuery } from "react-responsive";
-import { easing } from "maath";
-import { Suspense, lazy } from "react";
-import Loader from "../components/Loader";
+import { ArrowDown, MapPin } from "@phosphor-icons/react";
+import { profile, stats, toolStrip } from "../constants";
+import PipelineVisual from "../components/PipelineVisual";
+import Reveal from "../components/Reveal";
 
-// Lazy load heavy 3D components
-const LazyAstronaut = lazy(() =>
-  import("../components/Astronaut").then((m) => ({ default: m.Astronaut }))
+const Hero = () => (
+  <section id="top" className="pt-32 md:pt-40 bg-base">
+    <div className="wrap flex flex-col items-center text-center">
+      <Reveal className="flex items-center gap-2 px-3 py-2 border rounded-full bg-s1 border-white/10">
+        <MapPin size={16} weight="bold" aria-hidden="true" />
+        <span className="caption-1 text-neutral-400">
+          {profile.location}, open to remote work worldwide
+        </span>
+      </Reveal>
+
+      <Reveal delay={80} as="h1" className="mt-6 max-w-[680px] heading-1 hero-gradient-text">
+        Software engineer building fast, reliable backend systems
+      </Reveal>
+
+      <Reveal delay={160} as="p" className="mt-6 max-w-[680px] body-3 text-neutral-400">
+        I design multithreaded services, secure APIs, and automated test pipelines. Every project
+        below ships with numbers you can check.
+      </Reveal>
+
+      <Reveal delay={240} className="mt-8">
+        <a href="#work" className="btn-primary">
+          See my projects
+          <ArrowDown size={16} weight="bold" aria-hidden="true" />
+        </a>
+      </Reveal>
+
+      <Reveal delay={320} className="w-full mt-16 max-w-3xl">
+        <PipelineVisual />
+      </Reveal>
+    </div>
+
+    {/* Proof strip */}
+    <div className="wrap mt-16">
+      <Reveal as="ul" className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {stats.map((s) => (
+          <li key={s.label} className="p-6 card">
+            <p className="heading-2">{s.value}</p>
+            <p className="mt-2 caption-1 text-neutral-300">{s.label}</p>
+            <p className="mt-2 caption-5 text-neutral-500">{s.source}</p>
+          </li>
+        ))}
+      </Reveal>
+    </div>
+
+    {/* Tool marquee */}
+    <div className="mt-16 overflow-hidden border-y border-white/10" aria-label="Tools I work with">
+      <div className="flex w-max animate-marquee py-6">
+        {[...toolStrip, ...toolStrip].map((t, i) => (
+          <span
+            key={i}
+            aria-hidden={i >= toolStrip.length}
+            className="px-6 title-2 text-neutral-400 whitespace-nowrap"
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  </section>
 );
-
-const Hero = () => {
-  const isMobile = useMediaQuery({ maxWidth: 853 });
-  return (
-    <section id="home" className="relative flex items-start justify-center min-h-screen overflow-hidden md:items-start md:justify-start c-space bg-gradient-to-br from-[#0B0F17] via-[#0A0E14] to-[#070B12]">
-      <HeroText />
-      <ParallaxBackground />
-      <Particles
-        className="absolute inset-0 -z-0"
-        quantity={isMobile ? 15 : 30}
-        ease={80}
-        size={0.4}
-        color="#E6F1FF"
-        vx={0.01}
-        vy={0.003}
-      />
-      <div
-        className="absolute inset-0 -z-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(600px 400px at 40% 35%, rgba(0,229,255,0.10), rgba(0,229,255,0) 60%)",
-        }}
-      />
-      <div
-        className="absolute inset-0 -z-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(1200px 700px at 50% 40%, rgba(0,0,0,0), rgba(0,0,0,0.35) 70%)",
-        }}
-      />
-      <figure
-        className="absolute inset-0"
-        style={{ width: "100vw", height: "100vh" }}
-      >
-        <Canvas 
-          camera={{ position: [0, 1, 3] }}
-          performance={{ min: 0.5 }}
-          dpr={isMobile ? 1 : [1, 1.5]}
-          gl={{ antialias: false, powerPreference: "high-performance" }}
-        >
-          <Suspense fallback={<Loader />}>
-            <ambientLight intensity={0.2} />
-            <directionalLight position={[2, 3, 2]} color="#00E5FF" intensity={1.2} />
-            <directionalLight position={[-2, 1, 1]} color="#FF3CAC" intensity={0.6} />
-            <Float>
-              <LazyAstronaut
-                scale={isMobile && 0.23}
-                position={isMobile && [0, -1.5, 0]}
-              />
-            </Float>
-            <Rig />
-          </Suspense>
-        </Canvas>
-      </figure>
-    </section>
-  );
-};
-
-function Rig() {
-  return useFrame((state, delta) => {
-    easing.damp3(
-      state.camera.position,
-      [state.mouse.x / 14, 1 + state.mouse.y / 14, 3],
-      0.5,
-      delta
-    );
-  });
-}
 
 export default Hero;
