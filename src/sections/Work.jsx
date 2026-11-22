@@ -6,6 +6,7 @@ import Eyebrow from "../components/Eyebrow";
 import SplitHeading from "../components/SplitHeading";
 import useStaggerIn from "../hooks/useStaggerIn";
 import { reduced } from "../hooks/motion";
+import Scramble from "../components/Scramble";
 
 const Work = () => {
   const list = useStaggerIn("li[data-point]", { from: 16, step: 60 });
@@ -74,7 +75,7 @@ const Work = () => {
                     <p className="font-mono caption-4 text-neutral-400">
                       {p.index} / {p.date}
                     </p>
-                    <h3 className="mt-4 heading-4">{p.title}</h3>
+                    <Scramble as="h3" className="mt-4 heading-4">{p.title}</Scramble>
                     <p className="mt-2 caption-1 text-neutral-400">{p.kind}</p>
                     <p className="mt-4 body-3 text-neutral-300">{p.summary}</p>
 

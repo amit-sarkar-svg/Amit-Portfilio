@@ -3,6 +3,7 @@ import { animate } from "animejs";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { navLinks, profile } from "../constants";
 import { reduced } from "../hooks/motion";
+import Scramble from "../components/Scramble";
 
 const ids = [...navLinks.map((l) => l.href.slice(1)), "contact"];
 const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -37,8 +38,11 @@ const Navbar = () => {
       anim.current = animate(el, { opacity: 0, duration: 250, ease: "outQuad" });
       return;
     }
-    const left = link.offsetLeft;
-    const width = link.offsetWidth;
+    // Measure against the list, not the link's own wrapper
+    const base = group.current.getBoundingClientRect();
+    const box = link.getBoundingClientRect();
+    const left = box.left - base.left;
+    const width = box.width;
     if (reduced() || !placed.current) {
       el.style.transform = `translateX(${left}px)`;
       el.style.width = `${width}px`;
@@ -64,6 +68,16 @@ const Navbar = () => {
 
   useEffect(restToActive, [active]);
 
+  // Keep the highlight aligned if the window is resized
+  useEffect(() => {
+    const onResize = () => {
+      placed.current = false;
+      restToActive();
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  });
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e) => e.key === "Escape" && setOpen(false);
@@ -86,7 +100,7 @@ const Navbar = () => {
               href="#top"
               className="px-3 py-2 rounded-lg body-4 focus-visible:outline-2 focus-visible:outline-white"
             >
-              {profile.name}
+              <Scramble>{profile.name}</Scramble>
             </a>
             <button
               type="button"
@@ -106,7 +120,7 @@ const Navbar = () => {
               <span
                 ref={pill}
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-full rounded-lg bg-s3"
+                className="absolute left-0 top-0 h-full rounded-lg bg-s4 border border-white/10"
                 style={{ width: 0, opacity: 0 }}
               />
               {navLinks.map((l) => {

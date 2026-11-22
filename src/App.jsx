@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import Background from "./components/Background";
 import ScrollProgress from "./components/ScrollProgress";
+import Surprises from "./components/Surprises";
 import CommandPalette from "./components/CommandPalette";
 import CursorRing from "./components/CursorRing";
 import { GooFilter } from "./components/GooButton";
@@ -31,6 +32,7 @@ const App = () => {
       <Background />
       <CursorRing />
       <CommandPalette />
+      <Surprises />
       <ScrollProgress />
       <Navbar />
       <main id="main">

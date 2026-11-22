@@ -7,6 +7,7 @@ import Reveal from "../components/Reveal";
 import CountUp from "../components/CountUp";
 import GooButton from "../components/GooButton";
 import Tilt from "../components/Tilt";
+import DragBadge from "../components/DragBadge";
 import { reduced } from "../hooks/motion";
 
 const HeroScene = lazy(() => import("../components/HeroScene"));
@@ -186,6 +187,8 @@ const Hero = () => {
               </p>
             </div>
           )}
+
+          <DragBadge container={stage} />
 
           {/* Scroll hint */}
           {motion && (
