@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { animate, stagger } from "animejs";
 import { ArrowDown } from "@phosphor-icons/react";
 import { profile, stats, toolStrip } from "../constants";
@@ -8,6 +8,8 @@ import CountUp from "../components/CountUp";
 import GooButton from "../components/GooButton";
 import Tilt from "../components/Tilt";
 import { reduced } from "../hooks/motion";
+
+const HeroScene = lazy(() => import("../components/HeroScene"));
 
 const Hero = () => {
   const root = useRef(null);
@@ -34,13 +36,16 @@ const Hero = () => {
     <section id="top" ref={root} className="pt-28 md:pt-32">
       {/* Framed hero panel */}
       <div className="wrap">
-        <div className="relative px-4 py-16 border rounded-3xl md:px-8 md:py-24 border-white/10 bg-s1/40">
+        <div className="relative px-4 py-16 overflow-hidden border rounded-3xl md:px-8 md:py-24 border-white/10 bg-s1/40">
+          <Suspense fallback={null}>
+            <HeroScene />
+          </Suspense>
           <p className="absolute font-mono left-6 top-6 caption-4 text-neutral-500">Portfolio 2026</p>
           <p className="absolute hidden font-mono right-6 top-6 caption-4 text-neutral-500 sm:block">
             {profile.location} / {profile.timezone}
           </p>
 
-          <div className="flex flex-col items-center text-center">
+          <div className="relative flex flex-col items-center text-center lg:items-start lg:text-left lg:max-w-[600px]">
             <div
               data-hero
               style={{ opacity: 0 }}
