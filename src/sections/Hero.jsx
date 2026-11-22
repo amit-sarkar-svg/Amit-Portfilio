@@ -5,7 +5,8 @@ import { profile, stats, toolStrip } from "../constants";
 import PipelineVisual from "../components/PipelineVisual";
 import Reveal from "../components/Reveal";
 import CountUp from "../components/CountUp";
-import Magnetic from "../components/Magnetic";
+import GooButton from "../components/GooButton";
+import Tilt from "../components/Tilt";
 import { reduced } from "../hooks/motion";
 
 const Hero = () => {
@@ -30,43 +31,51 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" ref={root} className="pt-32 md:pt-40">
-      <div className="wrap flex flex-col items-center text-center">
-        <div
-          data-hero
-          style={{ opacity: 0 }}
-          className="flex items-center gap-2 px-3 py-2 border rounded-full bg-s1/70 backdrop-blur-md border-white/10"
-        >
-          <span className="live-dot size-2 rounded-full bg-live" aria-hidden="true" />
-          <span className="caption-1 text-neutral-400">
-            {profile.location}, open to remote work worldwide
-          </span>
+    <section id="top" ref={root} className="pt-28 md:pt-32">
+      {/* Framed hero panel */}
+      <div className="wrap">
+        <div className="relative px-4 py-16 border rounded-3xl md:px-8 md:py-24 border-white/10 bg-s1/40">
+          <p className="absolute font-mono left-6 top-6 caption-4 text-neutral-500">Portfolio 2026</p>
+          <p className="absolute hidden font-mono right-6 top-6 caption-4 text-neutral-500 sm:block">
+            {profile.location} / {profile.timezone}
+          </p>
+
+          <div className="flex flex-col items-center text-center">
+            <div
+              data-hero
+              style={{ opacity: 0 }}
+              className="eyebrow"
+            >
+              <span className="live-dot size-2 rounded-full bg-live" aria-hidden="true" />
+              Open to remote work worldwide
+            </div>
+
+            <h1
+              data-hero
+              style={{ opacity: 0 }}
+              className="mt-6 max-w-[680px] heading-1 hero-gradient-text"
+            >
+              Software engineer building fast, reliable backend systems
+            </h1>
+
+            <p data-hero style={{ opacity: 0 }} className="mt-6 max-w-[680px] body-3 text-neutral-400">
+              I design multithreaded services, secure APIs, and automated test pipelines. Every
+              project below ships with numbers you can check.
+            </p>
+
+            <div data-hero style={{ opacity: 0 }} className="mt-10">
+              <GooButton href="#work">
+                See my projects
+                <ArrowDown size={16} weight="bold" aria-hidden="true" />
+              </GooButton>
+            </div>
+          </div>
         </div>
 
-        <h1
-          data-hero
-          style={{ opacity: 0 }}
-          className="mt-6 max-w-[680px] heading-1 hero-gradient-text"
-        >
-          Software engineer building fast, reliable backend systems
-        </h1>
-
-        <p data-hero style={{ opacity: 0 }} className="mt-6 max-w-[680px] body-3 text-neutral-400">
-          I design multithreaded services, secure APIs, and automated test pipelines. Every project
-          below ships with numbers you can check.
-        </p>
-
-        <div data-hero style={{ opacity: 0 }} className="mt-8">
-          <Magnetic>
-            <a href="#work" className="btn-primary">
-              See my projects
-              <ArrowDown size={16} weight="bold" aria-hidden="true" />
-            </a>
-          </Magnetic>
-        </div>
-
-        <div data-hero style={{ opacity: 0 }} className="w-full mt-16 max-w-3xl">
-          <PipelineVisual />
+        <div data-hero style={{ opacity: 0 }} className="w-full mx-auto mt-8 max-w-3xl">
+          <Tilt>
+            <PipelineVisual />
+          </Tilt>
         </div>
       </div>
 
@@ -74,12 +83,16 @@ const Hero = () => {
       <div className="wrap mt-16">
         <Reveal as="ul" className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {stats.map((s) => (
-            <li key={s.label} className="p-6 card card-hover">
-              <p className="heading-2">
-                <CountUp to={s.to} suffix={s.suffix} />
-              </p>
-              <p className="mt-2 caption-1 text-neutral-300">{s.label}</p>
-              <p className="mt-2 caption-5 text-neutral-500">{s.source}</p>
+            <li key={s.label}>
+              <Tilt max={9}>
+                <div className="p-6 card card-hover">
+                  <p className="heading-2">
+                    <CountUp to={s.to} suffix={s.suffix} />
+                  </p>
+                  <p className="mt-2 caption-1 text-neutral-300">{s.label}</p>
+                  <p className="mt-2 caption-5 text-neutral-500">{s.source}</p>
+                </div>
+              </Tilt>
             </li>
           ))}
         </Reveal>

@@ -9,6 +9,7 @@ import { Ring } from "@/components/charts/ring";
 import { RingCenter } from "@/components/charts/ring-center";
 import { impact } from "../constants";
 import Reveal from "../components/Reveal";
+import Eyebrow from "../components/Eyebrow";
 import SplitHeading from "../components/SplitHeading";
 
 const data = [...impact].sort((a, b) => b.value - a.value);
@@ -41,9 +42,9 @@ const WhenVisible = ({ children, className = "" }) => {
 const Impact = () => (
   <section id="impact" className="wrap section-pad">
     <Reveal>
-      <p className="caption-1 text-neutral-400">Impact</p>
+      <Eyebrow>Impact</Eyebrow>
       <SplitHeading className="mt-2 heading-2 max-w-[680px]">
-        The numbers behind the work
+        The numbers <span className="text-neutral-500">behind the work</span>
       </SplitHeading>
     </Reveal>
 

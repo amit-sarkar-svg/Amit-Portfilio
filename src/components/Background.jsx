@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { animate, onScroll, stagger, svg } from "animejs";
 import { reduced } from "../hooks/motion";
+import { onScrollingChange } from "../hooks/scrollIdle";
 
 // Everything here is driven by anime.js: a dot grid with a ripple that radiates from the centre
 // and answers the cursor, circuit traces that draw themselves while packets ride along them,
@@ -16,14 +17,18 @@ const TRACES = [
   "M 200 -20 V 140 L 260 200 V 520 L 320 580 V 1020",
   "M 1380 -20 V 220 L 1320 280 V 600 L 1380 660 V 1020",
   "M -20 560 H 500 L 560 620 H 900 L 960 560 H 1300 L 1360 620 H 1620",
-  "M -20 820 H 160 L 220 880 H 640 L 700 820 H 1180 L 1240 880 H 1620",
-  "M 700 -20 V 80 L 760 140 V 460 L 700 520 V 1020",
-  "M 1000 1020 V 760 L 1060 700 V 420 L 1120 360 V -20",
+];
+
+// Pre-rendered radial fields: rasterised once, then only translated (no live blur).
+const FIELDS = [
+  { pos: { left: -260, top: -260 }, size: 900, rgb: "92,51,204", a: 0.5 },
+  { pos: { right: -240, top: "22%" }, size: 800, rgb: "51,194,204", a: 0.32 },
+  { pos: { left: "28%", bottom: -380 }, size: 880, rgb: "202,47,140", a: 0.24 },
 ];
 
 const measure = () => {
   const w = window.innerWidth;
-  const gap = w < 640 ? 44 : 56;
+  const gap = w < 640 ? 56 : 72;
   return { cols: Math.ceil(w / gap), rows: Math.ceil(window.innerHeight / gap) };
 };
 
@@ -92,8 +97,10 @@ const Background = () => {
       });
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+    const offIdle = onScrollingChange((s) => (s ? ripple.pause() : ripple.play()));
 
     return () => {
+      offIdle();
       window.removeEventListener("pointermove", onMove);
       ripple.revert();
       wake?.revert();
@@ -110,12 +117,14 @@ const Background = () => {
       return;
     }
     const made = [];
+    const heavy = [];
     const add = (a) => (made.push(a), a);
 
     add(animate(host, { opacity: [0, 1], duration: 1800, ease: "outQuad" }));
 
     // Circuit traces draw themselves in and out, one after another.
-    add(
+    heavy.push(
+      add(
       animate(svg.createDrawable(".trace-draw"), {
         draw: ["0 0", "0 1", "1 1"],
         duration: (_, i) => 5200 + i * 500,
@@ -123,20 +132,22 @@ const Background = () => {
         ease: "inOutQuad",
         loop: true,
       })
-    );
+    ));
 
     // Packets ride along each trace.
     $(".packet").forEach((pk, i) => {
       const path = host.querySelector(`#trace-${i}`);
       pk.style.opacity = 1;
-      add(
-        animate(pk, {
-          ...svg.createMotionPath(path),
-          duration: 6500 + i * 900,
-          delay: i * 700,
-          ease: "linear",
-          loop: true,
-        })
+      heavy.push(
+        add(
+          animate(pk, {
+            ...svg.createMotionPath(path),
+            duration: 6500 + i * 900,
+            delay: i * 700,
+            ease: "linear",
+            loop: true,
+          })
+        )
       );
     });
 
@@ -158,7 +169,6 @@ const Background = () => {
         animate(f, {
           translateX: [0, i % 2 ? -140 : 140, 0],
           translateY: [0, i === 1 ? 120 : -120, 0],
-          scale: [1, 1.25, 1],
           duration: 22000 + i * 6000,
           ease: "inOutSine",
           loop: true,
@@ -177,16 +187,14 @@ const Background = () => {
           autoplay: onScroll(sync),
         })
       );
-      add(
-        animate(gridRef.current, {
-          translateY: [0, -90],
-          ease: "linear",
-          autoplay: onScroll({ ...sync }),
-        })
-      );
     }
 
-    return () => made.forEach((a) => a.revert?.());
+    const offIdle = onScrollingChange((s) => heavy.forEach((a) => (s ? a.pause() : a.play())));
+
+    return () => {
+      offIdle();
+      made.forEach((a) => a.revert?.());
+    };
   }, []);
 
   return (
@@ -194,12 +202,22 @@ const Background = () => {
       ref={root}
       aria-hidden="true"
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
-      style={{ opacity: 0 }}
+      style={{ opacity: 0, contain: "strict" }}
     >
       {/* Colour fields: flat shapes softened by blur, drifting with anime.js */}
-      <div className="field absolute -left-40 -top-40 size-[640px] rounded-full bg-[#5c33cc] opacity-30 blur-[140px]" />
-      <div className="field absolute -right-40 top-1/4 size-[560px] rounded-full bg-[#33c2cc] opacity-20 blur-[140px]" />
-      <div className="field absolute left-1/3 -bottom-60 size-[620px] rounded-full bg-[#ca2f8c] opacity-15 blur-[150px]" />
+      {FIELDS.map((f, i) => (
+        <div
+          key={i}
+          className="field absolute rounded-full"
+          style={{
+            ...f.pos,
+            width: f.size,
+            height: f.size,
+            willChange: "transform",
+            background: `radial-gradient(closest-side, rgba(${f.rgb},${f.a}), rgba(${f.rgb},0))`,
+          }}
+        />
+      ))}
 
       {/* Dot grid */}
       <div
@@ -219,31 +237,37 @@ const Background = () => {
         ))}
       </div>
 
-      {/* Traces, packets and orbits */}
+      {/* Orbit rings: each is its own layer so rotation never repaints the page */}
+      <div className="absolute" style={{ left: "74%", top: "33%", width: 0, height: 0 }}>
+        {[170, 290, 420].map((r, i) => (
+          <div
+            key={r}
+            className="orbit absolute"
+            style={{ width: r * 2, height: r * 2, left: -r, top: -r, willChange: "transform" }}
+          >
+            <svg viewBox={`0 0 ${r * 2} ${r * 2}`} width="100%" height="100%">
+              <circle
+                cx={r}
+                cy={r}
+                r={r - 1}
+                fill="none"
+                stroke={i === 1 ? CYAN : VIOLET}
+                strokeOpacity="0.35"
+                strokeDasharray={["2 14", "120 210", "1 22"][i]}
+              />
+            </svg>
+          </div>
+        ))}
+      </div>
+
+      {/* Traces and packets */}
       <svg
         ref={traceLayer}
         className="absolute inset-x-0 top-0 w-full h-[calc(100%+320px)]"
+        style={{ willChange: "transform" }}
         viewBox="0 0 1600 1000"
         preserveAspectRatio="xMidYMid slice"
       >
-        <g className="orbits">
-          {[170, 290, 420].map((r, i) => (
-            <circle
-              key={r}
-              className="orbit"
-              cx="1180"
-              cy="330"
-              r={r}
-              fill="none"
-              stroke={i === 1 ? CYAN : VIOLET}
-              strokeOpacity="0.35"
-              strokeWidth="1"
-              strokeDasharray={["2 14", "120 210", "1 22"][i]}
-              style={{ transformBox: "fill-box", transformOrigin: "center" }}
-            />
-          ))}
-        </g>
-
         {TRACES.map((d, i) => (
           <g key={i}>
             <path

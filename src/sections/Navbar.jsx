@@ -1,18 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { animate } from "animejs";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import { navLinks, profile } from "../constants";
+import { reduced } from "../hooks/motion";
 
-const ids = navLinks.map((l) => l.href.slice(1));
+const ids = [...navLinks.map((l) => l.href.slice(1)), "contact"];
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
+  const group = useRef(null);
+  const pill = useRef(null);
+  const anim = useRef();
+  const placed = useRef(false);
 
-  // Mark the section currently in view.
+  // Section currently in view
   useEffect(() => {
     const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => e.isIntersecting && setActive(e.target.id));
-      },
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id === "contact" ? "" : e.target.id)),
       { rootMargin: "-40% 0px -55% 0px" }
     );
     ids.forEach((id) => {
@@ -22,7 +28,42 @@ const Navbar = () => {
     return () => io.disconnect();
   }, []);
 
-  // Lock scroll and allow Escape while the mobile panel is open.
+  // Slide the highlight to a link, stretching as it travels so it feels gooey.
+  const moveTo = (link) => {
+    const el = pill.current;
+    if (!el) return;
+    if (!link) {
+      anim.current?.pause();
+      anim.current = animate(el, { opacity: 0, duration: 250, ease: "outQuad" });
+      return;
+    }
+    const left = link.offsetLeft;
+    const width = link.offsetWidth;
+    if (reduced() || !placed.current) {
+      el.style.transform = `translateX(${left}px)`;
+      el.style.width = `${width}px`;
+      el.style.opacity = 1;
+      placed.current = true;
+      return;
+    }
+    anim.current?.pause();
+    anim.current = animate(el, {
+      translateX: left,
+      width,
+      opacity: 1,
+      scaleY: [1.12, 1],
+      duration: 700,
+      ease: "outElastic(1, .65)",
+    });
+  };
+
+  const restToActive = () => {
+    const link = group.current?.querySelector(`[data-id="${active}"]`);
+    moveTo(link || null);
+  };
+
+  useEffect(restToActive, [active]);
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e) => e.key === "Escape" && setOpen(false);
@@ -33,48 +74,72 @@ const Navbar = () => {
     };
   }, [open]);
 
-  const linkBase =
-    "px-3 py-2 rounded-lg title-4 transition duration-300 ease-base focus-visible:outline-2 focus-visible:outline-white";
+  const openPalette = () => window.dispatchEvent(new Event("open-palette"));
 
   return (
     <>
       <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-4 pointer-events-none">
-        <nav
-          aria-label="Primary"
-          className="pointer-events-auto flex items-center justify-between gap-6 p-2 border rounded-2xl border-white/10 bg-s1/70 backdrop-blur-md max-md:w-full"
-        >
-          <a
-            href="#top"
-            className="px-3 py-2 rounded-lg body-4 focus-visible:outline-2 focus-visible:outline-white"
-          >
-            {profile.name}
-          </a>
+        <nav aria-label="Primary" className="pointer-events-auto flex items-center gap-2 max-md:w-full max-md:justify-between">
+          {/* Brand + search pill */}
+          <div className="flex items-center gap-2 p-2 border rounded-2xl border-white/10 bg-s1/70 backdrop-blur-md">
+            <a
+              href="#top"
+              className="px-3 py-2 rounded-lg body-4 focus-visible:outline-2 focus-visible:outline-white"
+            >
+              {profile.name}
+            </a>
+            <button
+              type="button"
+              onClick={openPalette}
+              aria-label="Open quick navigation"
+              className="items-center hidden gap-2 px-2 py-1 transition duration-300 rounded-lg cursor-pointer lg:flex bg-s2 text-neutral-400 ease-base hover:text-white hover:bg-s3"
+            >
+              <MagnifyingGlass size={16} aria-hidden="true" />
+              <span className="keycap">{isMac ? "⌘" : "Ctrl"}</span>
+              <span className="keycap">K</span>
+            </button>
+          </div>
 
-          <ul className="hidden gap-1 md:flex">
-            {navLinks.map((l) => {
-              const on = active === l.href.slice(1);
-              return (
-                <li key={l.href}>
-                  <a
-                    href={l.href}
-                    aria-current={on ? "true" : undefined}
-                    className={`${linkBase} block ${
-                      on ? "bg-s3 text-white" : "text-neutral-400 hover:text-white hover:bg-s2"
-                    }`}
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+          {/* Links with a sliding highlight */}
+          <div className="hidden p-2 border md:block rounded-2xl border-white/10 bg-s1/70 backdrop-blur-md">
+            <ul ref={group} className="relative flex" onPointerLeave={restToActive}>
+              <span
+                ref={pill}
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-full rounded-lg bg-s3"
+                style={{ width: 0, opacity: 0 }}
+              />
+              {navLinks.map((l) => {
+                const id = l.href.slice(1);
+                const on = active === id;
+                return (
+                  <li key={l.href} className="relative">
+                    <a
+                      href={l.href}
+                      data-id={id}
+                      aria-current={on ? "true" : undefined}
+                      onPointerEnter={(e) => moveTo(e.currentTarget)}
+                      onFocus={(e) => moveTo(e.currentTarget)}
+                      className={`block px-3 py-2 rounded-lg title-4 transition-colors duration-300 ease-base focus-visible:outline-2 focus-visible:outline-white ${
+                        on ? "text-white" : "text-neutral-400 hover:text-white"
+                      }`}
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
-          <a
-            href="#contact"
-            className="hidden md:inline-flex px-3 py-2 rounded-lg bg-white text-black button-sm transition duration-300 ease-base hover:bg-[#d9d9d9] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            Get in touch
-          </a>
+          <div className="hidden p-2 border md:block rounded-2xl border-white/10 bg-s1/70 backdrop-blur-md">
+            <a
+              href="#contact"
+              className="inline-flex px-3 py-2 text-black bg-white rounded-lg button-sm transition duration-300 ease-base hover:bg-[#d9d9d9] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Get in touch
+            </a>
+          </div>
 
           <button
             type="button"
@@ -82,7 +147,7 @@ const Navbar = () => {
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
-            className="relative z-[60] md:hidden size-10 rounded-lg bg-s2 cursor-pointer focus-visible:outline-2 focus-visible:outline-white"
+            className="relative z-[60] md:hidden size-12 rounded-2xl border border-white/10 bg-s1/70 backdrop-blur-md cursor-pointer focus-visible:outline-2 focus-visible:outline-white"
           >
             <span
               className={`absolute left-3 right-3 top-1/2 h-0.5 bg-white rounded-full transition duration-500 ease-base ${

@@ -1,12 +1,13 @@
 import { process } from "../constants";
 import Reveal from "../components/Reveal";
+import Eyebrow from "../components/Eyebrow";
 import SplitHeading from "../components/SplitHeading";
 
 const Process = () => (
   <section id="process" className="wrap section-pad">
     <Reveal>
-      <p className="caption-1 text-neutral-400">How I work</p>
-      <SplitHeading className="mt-2 heading-2 max-w-[680px]">Three habits behind every release</SplitHeading>
+      <Eyebrow>How I work</Eyebrow>
+      <SplitHeading className="mt-2 heading-2 max-w-[680px]">Three habits <span className="text-neutral-500">behind every release</span></SplitHeading>
     </Reveal>
 
     <ol className="grid gap-4 mt-12 md:grid-cols-3">

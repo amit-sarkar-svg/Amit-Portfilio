@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -101,7 +100,7 @@ em, i, cite, address { font-style: normal; }
   @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white;
 }
 @utility btn-ghost {
-  @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-s2 text-white button-md cursor-pointer border border-white/10;
+  @apply rim inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-s2 text-white button-md cursor-pointer border border-white/10;
   @apply transition duration-300 ease-base hover:bg-s3 hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-px;
   @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white;
 }
@@ -109,7 +108,7 @@ em, i, cite, address { font-style: normal; }
 /* ---------- Cards ---------- */
 /* Cards are translucent so the animated backdrop stays faintly visible. */
 @utility card {
-  @apply bg-s1/70 backdrop-blur-md border border-white/10 rounded-2xl;
+  @apply bg-s1/85 border border-white/10 rounded-2xl;
 }
 @utility card-hover {
   @apply transition duration-500 ease-base hover:bg-s2/80 hover:-translate-y-1 hover:border-white/25;
@@ -282,4 +281,58 @@ em, i, cite, address { font-style: normal; }
   --chart-foreground: #9b9b9b;
   --chart-label: #cfcfcf;
   --chart-tooltip-background: #1f1f1f;
+}
+
+/* ---------- Cinematic theme (inspired by Layers, OriginKit, useLayouts, Evil Buttons) ---------- */
+@property --rim {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes rim-spin { to { --rim: 360deg; } }
+
+/* Small label pill that sits above a section heading */
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-s1/85 caption-1 text-neutral-400;
+}
+
+/* Keyboard key cap */
+@utility keycap {
+  @apply inline-flex items-center justify-center min-w-6 h-6 px-2 rounded-md bg-s3 border border-white/15 font-mono caption-4 text-neutral-300;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.7);
+}
+
+/* Rim light that travels around a button's edge on hover */
+@utility rim {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--rim), transparent 0 62%, rgba(255, 255, 255, 0.95) 80%, transparent 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 500ms var(--ease-base);
+    pointer-events: none;
+  }
+  &:hover::before,
+  &:focus-visible::before {
+    opacity: 1;
+    animation: rim-spin 2.4s linear infinite;
+  }
+}
+
+/* Heavy outlined type */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-ghost:hover::before, .btn-ghost:focus-visible::before { animation: none; }
 }

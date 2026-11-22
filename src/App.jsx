@@ -1,6 +1,9 @@
 import { lazy, Suspense } from "react";
 import Background from "./components/Background";
 import ScrollProgress from "./components/ScrollProgress";
+import CommandPalette from "./components/CommandPalette";
+import CursorRing from "./components/CursorRing";
+import { GooFilter } from "./components/GooButton";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
 import Tagline from "./sections/Tagline";
@@ -24,7 +27,10 @@ const App = () => {
       >
         Skip to content
       </a>
+      <GooFilter />
       <Background />
+      <CursorRing />
+      <CommandPalette />
       <ScrollProgress />
       <Navbar />
       <main id="main">
